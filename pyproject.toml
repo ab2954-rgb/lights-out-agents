@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lights-out-agents"
+version = "0.1.0"
+description = "Agentic AI reference implementation for Lights-Out finance operations: LangGraph orchestration, A0–A4 autonomy dial, hash-chained Evidence Ledger, enterprise RAG with evals, MCP-style ERP tools."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Adil Bahir" }]
+dependencies = [
+  "langgraph>=0.2",
+  "langchain-core>=0.3",
+  "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+llm = ["langchain-anthropic>=0.2", "langchain-openai>=0.2"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
