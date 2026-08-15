@@ -1,0 +1,11 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [bug]
+body:
+  - type: textarea
+    attributes: {label: What happened, description: Steps, expected vs actual}
+    validations: {required: true}
+  - type: input
+    attributes: {label: Python / OS / LLM_PROVIDER}
+  - type: textarea
+    attributes: {label: Ledger export or eval_report.json (if relevant)}

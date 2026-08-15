@@ -1,0 +1,9 @@
+name: Feature / new Lights-Out function
+description: Propose a capability or a new autonomous function
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes: {label: Function or capability, description: What process would agents take over, and at what autonomy level?}
+    validations: {required: true}
+  - type: textarea
+    attributes: {label: Controls evidenced, description: Which control IDs (SOX / SR 11-7 / DORA / GDPR) must the ledger evidence?}
