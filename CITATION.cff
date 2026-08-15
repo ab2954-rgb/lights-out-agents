@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you reference this work, please cite it as below."
+title: "Lights-Out Agents: an agentic AI reference implementation for autonomous finance operations"
+authors:
+  - family-names: Bahir
+    given-names: Adil
+version: 0.1.0
+date-released: 2026-08-15
+url: https://github.com/ab2954-rgb/lights-out-agents
+license: MIT
+keywords: [agentic-ai, langgraph, autonomous-finance, evidence-ledger, llmops, rag]

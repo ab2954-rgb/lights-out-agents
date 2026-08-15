@@ -1,13 +1,44 @@
-# Lights-Out Agents
+<h1 align="center">Lights-Out Agents</h1>
+<p align="center"><b>Agentic AI reference implementation for autonomous ("Lights-Out") finance operations</b><br/>
+LangGraph orchestration · A0–A4 Autonomy Dial · hash-chained Evidence Ledger · hybrid RAG with eval gate · MCP-style ERP tools</p>
 
-**Agentic AI reference implementation for Lights-Out finance operations** — a working, tested slice of the five-layer stack I use to take enterprise functions from human-operated to autonomous, with the controls a regulated enterprise needs to let agents act.
+<p align="center">
+<a href="https://github.com/ab2954-rgb/lights-out-agents/actions/workflows/ci.yml"><img alt="ci" src="https://github.com/ab2954-rgb/lights-out-agents/actions/workflows/ci.yml/badge.svg"></a>
+<img alt="python" src="https://img.shields.io/badge/python-3.10%20%7C%203.12-3776AB?logo=python&logoColor=white">
+<img alt="langgraph" src="https://img.shields.io/badge/LangGraph-1.x-1C3C3C?logo=langchain&logoColor=white">
+<img alt="tests" src="https://img.shields.io/badge/tests-10%20passing-brightgreen">
+<img alt="evals" src="https://img.shields.io/badge/eval%20gate-passing-brightgreen">
+<img alt="license" src="https://img.shields.io/badge/license-MIT-blue">
+<img alt="ruff" src="https://img.shields.io/badge/lint-ruff-261230?logo=ruff&logoColor=white">
+</p>
 
-[![ci](https://github.com/ab2954-rgb/lights-out-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/ab2954-rgb/lights-out-agents/actions)
-Python 3.10+ · LangGraph · LangChain · Pydantic · runs fully offline in CI (no API keys required); plug in Claude / GPT-4.x / Cohere with two env vars.
+> **Why this exists.** Most "AI agents for finance" demos stop at a chat window. Regulated enterprises need three things a demo never shows: a way to *earn* autonomy on evidence, a way to *prove* what an agent did to an auditor, and a way to *stop* it acting alone when it drifts. This repository is a small, fully tested slice of the five-layer stack I use to deliver exactly that — the same vocabulary as my production work, without client code.
+>
+> Companion to **[Lights Out Finance](https://lightsoutfinance.net)** — autonomous finance for CFOs: the continuous close, self-steering planning, self-evidencing controls.
 
-> Companion to [Lights Out Finance](https://lightsoutfinance.net) — autonomous finance for CFOs: the continuous close, self-steering planning, self-evidencing controls.
+Runs **fully offline** (no API keys) so tests and evals are reproducible in CI; plug in Claude / GPT-4.x / Cohere with two env vars.
 
----
+## Read this repo in 10 minutes
+
+| Minute | Open | You will see |
+|---|---|---|
+| 0–2 | `python examples/run_close.py --level A3` | six reconciling items closed touchlessly, ledger verified |
+| 2–4 | `python examples/run_close.py --level A1` | the same run pausing on a LangGraph `interrupt` for human approval, then resuming |
+| 4–6 | [`autonomy/dial.py`](src/lights_out/autonomy/dial.py) · [ADR-0001](docs/adr/0001-autonomy-dial.md) | how autonomy is *earned* (accuracy × samples × incident rate) and *demoted* |
+| 6–8 | [`ledger/evidence_ledger.py`](src/lights_out/ledger/evidence_ledger.py) · [ADR-0002](docs/adr/0002-evidence-ledger.md) | hash chain, `verify_chain()`, control-ID pulls |
+| 8–10 | [`evals/harness.py`](src/lights_out/evals/harness.py) · [`ci.yml`](.github/workflows/ci.yml) | eval thresholds that fail the build **and** gate autonomy — the same numbers |
+
+## Eval gate (current `main`)
+
+| Metric | Threshold | Current |
+|---|---|---|
+| Classifier accuracy (golden set) | ≥ 0.90 | **1.00** |
+| Classifier incident rate (confident wrong mutation) | ≤ 0.002 @A4 | **0.00** |
+| RAG hit@4 | ≥ 0.85 | **1.00** |
+| RAG citation precision | ≥ 0.90 | **1.00** |
+| RAG refusal accuracy (out-of-corpus questions) | = 1.00 | **1.00** |
+
+Golden sets are deliberately small and readable (`data/*.jsonl`); the point is the *mechanism* — extend them and the gate follows.
 
 ## What's in here
 
@@ -92,6 +123,23 @@ evidence ledger: 16 entries, verified=True
 
 Six reconciling items: two exact matches, one reference-format mismatch, one short payment (bank fee) and one bank charge auto-posted as adjustments, one 47k receipt in transit carried forward. At **A1** the same run pauses on a LangGraph `interrupt` with three items awaiting approval and resumes with the reviewer's decisions — each recorded in the ledger under `SOX-R2R-05` / `DORA-Art9 human oversight`.
 
+## Repository map
+
+```
+src/lights_out/
+  agents/close_orchestrator.py   LangGraph graph: fetch → match → classify → decide → [interrupt] → act → summarise
+  autonomy/dial.py               A0–A4 policy: runtime routing + evidence-based ratchet
+  ledger/evidence_ledger.py      hash-chained, control-mapped ledger + independent verifier
+  tools/erp_tools.py             MCP-style typed tools (GL, bank, idempotent journal posting)
+  rag/pipeline.py                chunking, BM25 ⊕ dense (RRF), rerank, grounded answer / refusal
+  evals/harness.py               golden-set metrics → CI gate → autonomy gate
+  llm/provider.py                model routing, structured outputs, heuristic guardrail, offline fallback
+data/                            policies (RAG corpus) + golden sets
+docs/adr/                        architecture decision records
+examples/                        run_close.py, run_evals.py
+tests/                           10 tests, offline
+```
+
 ## Design principles
 
 1. **Autonomy is earned, not configured.** `AutonomyPolicy.promote()` only moves a function up a level when the eval harness supplies accuracy, sample size and incident-rate evidence; a breach demotes it. The CI gate and the autonomy gate are the same numbers.
@@ -105,6 +153,10 @@ Six reconciling items: two exact matches, one reference-format mismatch, one sho
 - Postgres checkpointer + pgvector index; Cohere Embed/Rerank adapters
 - LangSmith / Langfuse tracing hooks and cost-per-item telemetry into the ledger
 - Second function: touchless sales-order processing (Order-to-Cash) on the same dial and ledger
+
+## Contributing & security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) (ground rules: determinism first, offline CI, every action is evidence, evals gate features) and [SECURITY.md](SECURITY.md). Cite via [CITATION.cff](CITATION.cff).
 
 ## Author
 
