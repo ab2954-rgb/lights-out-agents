@@ -1,0 +1,10 @@
+{"question": "When must bank accounts be reconciled to the general ledger?", "expected_doc": "POL-1"}
+{"question": "What is the threshold below which the agent may post unrecorded bank charges without pre-approval?", "expected_doc": "POL-1"}
+{"question": "Which account are bank charges posted to?", "expected_doc": "POL-1"}
+{"question": "Who approves journals above 100000?", "expected_doc": "POL-2"}
+{"question": "What sampling rate applies to auto-approved agent journals?", "expected_doc": "POL-2"}
+{"question": "What must reversing entries reference?", "expected_doc": "POL-2"}
+{"question": "What triggers an automatic autonomy demotion?", "expected_doc": "POL-3"}
+{"question": "Which regulations govern model risk for finance agents?", "expected_doc": "POL-3"}
+{"question": "How is human oversight evidenced?", "expected_doc": "POL-3"}
+{"question": "What is the company's travel expense per-diem rate in Singapore?", "expected_refusal": true, "expect_refusal": true}

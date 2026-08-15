@@ -1,0 +1,10 @@
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 100.0, "ref": "INV-1", "memo": ""}, "bank": {"id": "b", "amount": 100.0, "ref": "INV-1"}, "label": "matched"}
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 250.0, "ref": "INV-22", "memo": ""}, "bank": {"id": "b", "amount": 250.0, "ref": "INV 22"}, "label": "reference_format"}
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 900.0, "ref": "INV-3", "memo": ""}, "bank": {"id": "b", "amount": 885.0, "ref": "INV-3"}, "label": "short_payment"}
+{"gl": null, "bank": {"id": "b", "amount": -30.0, "ref": "FEE"}, "label": "bank_charge"}
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 5000.0, "ref": "INV-9", "memo": ""}, "bank": null, "label": "in_transit"}
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 5000.0, "ref": "INV-10", "memo": ""}, "bank": {"id": "b", "amount": 4000.0, "ref": "INV-10"}, "label": "unknown"}
+{"gl": null, "bank": {"id": "b", "amount": 700.0, "ref": "XYZ"}, "label": "unknown"}
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 10.0, "ref": "INV-11", "memo": ""}, "bank": {"id": "b", "amount": 10.0, "ref": "inv-11"}, "label": "reference_format"}
+{"gl": {"id": "g", "account": "1010-Cash", "amount": 1200.0, "ref": "INV-12", "memo": ""}, "bank": {"id": "b", "amount": 1180.0, "ref": "INV-12"}, "label": "short_payment"}
+{"gl": null, "bank": {"id": "b", "amount": -12.0, "ref": "CHG"}, "label": "bank_charge"}
