@@ -3,7 +3,7 @@
 LangGraph orchestration · A0–A4 Autonomy Dial · hash-chained Evidence Ledger · hybrid RAG with eval gate · MCP-style ERP tools</p>
 
 <p align="center">
-<a href="https://github.com/ab2954-rgb/lights-out-agents/actions/workflows/ci.yml"><img alt="ci" src="https://github.com/ab2954-rgb/lights-out-agents/actions/workflows/ci.yml/badge.svg"></a>
+<a href="https://github.com/adil-bahir/lights-out-agents/actions/workflows/ci.yml"><img alt="ci" src="https://github.com/adil-bahir/lights-out-agents/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="python" src="https://img.shields.io/badge/python-3.10%20%7C%203.12-3776AB?logo=python&logoColor=white">
 <img alt="langgraph" src="https://img.shields.io/badge/LangGraph-1.x-1C3C3C?logo=langchain&logoColor=white">
 <img alt="tests" src="https://img.shields.io/badge/tests-10%20passing-brightgreen">
