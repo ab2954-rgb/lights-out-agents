@@ -6,7 +6,7 @@ LangGraph orchestration · A0–A4 Autonomy Dial · hash-chained Evidence Ledger
 <a href="https://github.com/adil-bahir/lights-out-agents/actions/workflows/ci.yml"><img alt="ci" src="https://github.com/adil-bahir/lights-out-agents/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="python" src="https://img.shields.io/badge/python-3.10%20%7C%203.12-3776AB?logo=python&logoColor=white">
 <img alt="langgraph" src="https://img.shields.io/badge/LangGraph-1.x-1C3C3C?logo=langchain&logoColor=white">
-<img alt="tests" src="https://img.shields.io/badge/tests-10%20passing-brightgreen">
+<img alt="tests" src="https://img.shields.io/badge/tests-15%20passing-brightgreen">
 <img alt="evals" src="https://img.shields.io/badge/eval%20gate-passing-brightgreen">
 <img alt="license" src="https://img.shields.io/badge/license-MIT-blue">
 <img alt="ruff" src="https://img.shields.io/badge/lint-ruff-261230?logo=ruff&logoColor=white">
@@ -50,6 +50,9 @@ Golden sets are deliberately small and readable (`data/*.jsonl`); the point is t
 | `tools/erp_tools.py` | **MCP-style typed tools** for GL, bank and journal posting (Pydantic schemas → JSON schema, idempotent mutations). | Adapters over SAP OData/BAPI, Oracle Fusion, NetSuite SuiteTalk, Workday, published via an MCP server |
 | `rag/pipeline.py` | **Enterprise RAG** over finance policies: sentence-aware chunking, **hybrid BM25 + dense** retrieval with reciprocal-rank fusion, reranking, grounded answers with chunk citations and explicit refusal. | Cohere Embed v3 + Rerank v3 (or OpenAI/Voyage), pgvector / Qdrant index |
 | `evals/harness.py` | **Eval harness → CI gate**: golden datasets, classifier accuracy/incident rate, RAG hit@k / citation precision / refusal accuracy; thresholds fail the build and **gate autonomy promotion**. | RAGAS / LangSmith datasets, regression gates in GitHub Actions |
+| `agents/order_release.py` + `tools/o2c_tools.py` | **Second function on the same dial and ledger** — touchless sales-order release (price / credit / stock checks are code, not prompts); one failed check → human, two → escalate; O2C control IDs. Proves adding a function = tools + graph + golden set. | SAP SD / Oracle OM adapters behind the MCP server |
+| `mcp_server.py` | **MCP server** (FastMCP, stdio) exposing the ERP tools with the *same* Pydantic contracts as the graph; every call is ledgered; `ledger_export` for independent verification. | `python -m lights_out.mcp_server` behind Claude Desktop / any MCP client |
+| `checkpointing.py` | **Checkpointer factory** — MemorySaver by default, `PostgresSaver` when `LIGHTS_OUT_PG_DSN` is set, so human-in-the-loop interrupts survive restarts without graph changes. | Postgres, `pip install -e ".[postgres]"` |
 | `llm/provider.py` | **Model routing + structured outputs**: cheap model for classification, stronger model for drafting; Pydantic contract via `with_structured_output`; heuristic cross-check as a guardrail; deterministic offline fallback. | Anthropic / OpenAI / Bedrock / Vertex, prompt caching, cost & latency budgets |
 
 ## Architecture
@@ -92,10 +95,12 @@ flowchart LR
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                                   # 10 tests, offline
+pytest -q                                   # 15 tests, offline
 python examples/run_close.py --level A3     # lights-out below materiality; unknowns escalate
 python examples/run_close.py --level A1     # pauses on LangGraph interrupt for human approval, then resumes
 python examples/run_evals.py                # eval report + CI gate (exit 1 on breach)
+python examples/run_o2c.py --level A3       # second function: touchless sales-order release
+python -m lights_out.mcp_server             # MCP server over stdio (pip install -e ".[mcp]")
 ```
 
 Turn on a real model (optional):
@@ -127,6 +132,10 @@ Six reconciling items: two exact matches, one reference-format mismatch, one sho
 
 ```
 src/lights_out/
+  mcp_server.py                  MCP (stdio) server over the ERP tools, ledgered
+  checkpointing.py               MemorySaver / PostgresSaver factory
+  agents/order_release.py        Order-to-Cash graph (second function)
+  tools/o2c_tools.py             typed O2C tools (orders, credit, stock, release)
   agents/close_orchestrator.py   LangGraph graph: fetch → match → classify → decide → [interrupt] → act → summarise
   autonomy/dial.py               A0–A4 policy: runtime routing + evidence-based ratchet
   ledger/evidence_ledger.py      hash-chained, control-mapped ledger + independent verifier
@@ -137,7 +146,7 @@ src/lights_out/
 data/                            policies (RAG corpus) + golden sets
 docs/adr/                        architecture decision records
 examples/                        run_close.py, run_evals.py
-tests/                           10 tests, offline
+tests/                           15 tests, offline
 ```
 
 ## Design principles
@@ -149,10 +158,15 @@ tests/                           10 tests, offline
 
 ## Roadmap
 
-- MCP server exposing `erp_tools` (stdio + HTTP) and a LangGraph `ToolNode` variant of the graph
-- Postgres checkpointer + pgvector index; Cohere Embed/Rerank adapters
+- ~~MCP server exposing `erp_tools`~~ shipped in 0.2.0 · HTTP transport and a LangGraph `ToolNode` variant
+- ~~Postgres checkpointer~~ shipped in 0.2.0 · pgvector index; Cohere Embed/Rerank adapters
 - LangSmith / Langfuse tracing hooks and cost-per-item telemetry into the ledger
-- Second function: touchless sales-order processing (Order-to-Cash) on the same dial and ledger
+- ~~Second function: touchless sales-order processing~~ shipped in 0.2.0 · third function: Procure-to-Pay invoice matching
+
+## Papers
+
+- [Earning Autonomy: an evaluation-gated ratchet for agentic systems in regulated enterprises](docs/papers/01-earning-autonomy.md)
+- [Verifiable Agent Actions: a hash-chained, control-mapped evidence ledger for autonomous operations](docs/papers/02-verifiable-agent-actions.md)
 
 ## Contributing & security
 
